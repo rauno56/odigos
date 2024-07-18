@@ -4,6 +4,8 @@
 TMPDIR="$(mktemp -d)"
 CHARTDIR="helm/odigos"
 
+ls -lah $TMPDIR ## TODO: remove
+
 if [ -z "$TAG" ]; then
 	echo "TAG required"
 	exit 1
