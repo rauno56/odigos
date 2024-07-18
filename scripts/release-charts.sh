@@ -6,6 +6,13 @@ CHARTDIR="helm/odigos"
 
 ls -lah $TMPDIR ## TODO: remove
 
+prefix () {
+	for i in $1; do
+		echo "renaming $i to $2$1"
+		mv "$i" "$2$1"
+	done
+}
+
 if [ -z "$TAG" ]; then
 	echo "TAG required"
 	exit 1
@@ -34,7 +41,7 @@ helm repo index . --merge index.yaml --url https://github.com/$GITHUB_REPOSITORY
 # The check avoids pushing the same tag twice and only pushes if there's a new entry in the index
 if [[ $(git diff -G apiVersion | wc -c) -ne 0 ]]; then
 	# Upload new packages
-	rename 'odigos' 'test-helm-assets-odigos' *.tgz
+	prefix *.tgz 'test-helm-assets-'
 	gh release upload -R $GITHUB_REPOSITORY $TAG $TMPDIR/*.tgz
 
 	git add index.yaml
