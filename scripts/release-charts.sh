@@ -1,10 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Setup
 TMPDIR="$(mktemp -d)"
-CHARTDIR="helm/odigos"
-
-ls -lah $TMPDIR ## TODO: remove
+CHARTDIR="helm/odigos helm/odigos-crds"
+TAG=${TAG#V}
 
 prefix () {
 	for i in $1; do
@@ -33,8 +32,11 @@ helm repo add odigos https://odigos-io.github.io/odigos-charts 2> /dev/null || t
 git worktree add $TMPDIR gh-pages -f
 
 # Update index with new packages
-sed -i -E 's/v0.0.0/'"${TAG}"'/' $CHARTDIR/Chart.yaml
-helm package helm/* -d $TMPDIR
+for chart in "$CHARTDIR"
+do
+	sed -i -E 's/0.0.0/'"${TAG}"'/' $chart/Chart.yaml
+done
+helm package $CHARTDIR -d $TMPDIR
 pushd $TMPDIR
 helm repo index . --merge index.yaml --url https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/
 
