@@ -1,6 +1,9 @@
 name: Release Odigos CLI
 
 on:
+  push:
+    tags:
+      - "v*"
   workflow_dispatch:
     inputs:
       tag:
@@ -126,7 +129,7 @@ jobs:
           curl -X POST -H 'Content-type: application/json' --data '{"link":"https://github.com/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }}", "description":"ERROR: failed to publish odigos CLI", "tag":"${{ env.TAG }}"}' ${{ env.SLACK_WEBHOOK_URL }}
 
   release-helm:
-    needs: [release-cli]
+    # needs: [release-cli]
     runs-on: ubuntu-latest
     steps:
       - name: Determine Tag Value
@@ -138,7 +141,7 @@ jobs:
           else
             echo "Unknown event type"
             echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-            exit 1
+            # exit 1
           fi
 
       - name: Checkout
